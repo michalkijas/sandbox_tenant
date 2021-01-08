@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.hibernate.Session;
 import javax.persistence.EntityManager;
 
@@ -18,18 +19,17 @@ public class TenantRepositoryAspect {
     private final EntityManager entityManager;
 
 
-//    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
-//    void isRepository() {
-//        /* aspect */
-//    }
-//
-//    @Pointcut(value = "isRepository()")
-//    void enableMultiTenancy() {
-//        /* aspect */
-//    }
-//
-//    @Around("execution(public * *(..)) && enableMultiTenancy()")
-    @Around("execution(public * org.springframework.data.repository.Repository+.*(..))")
+    @Pointcut("execution(public * org.springframework.data.repository.Repository+.*(..))")
+    void isRepository() {
+        /* aspect */
+    }
+
+    @Pointcut(value = "isRepository()")
+    void enableMultiTenancy() {
+        /* aspect */
+    }
+
+    @Around("execution(public * *(..)) && enableMultiTenancy()")
     public Object aroundExecution(final ProceedingJoinPoint pjp) throws Throwable {
         Session session = this.entityManager.unwrap(Session.class);
         session.enableFilter(TENANT_FILTER_NAME)
